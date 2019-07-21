@@ -1,4 +1,4 @@
-include <../../parameters.scad>
+include <../../../parameters.scad>
 
 module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = false,
             square_nut = false)
