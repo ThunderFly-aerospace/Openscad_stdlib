@@ -3,7 +3,7 @@ include <../../../parameters.scad>
 module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = false,
             square_nut = false)
 {
-    bolts = [//size | bolt d | head h | head d | nut h | nut d | nut pckt 
+    bolts = [//size | bolt d | head h | head d | nut h | nut d | nut pckt
              [10    ,  10.4  , 10     , 16.5   , 10.5  , 25.5  , 22.3],
              [8     ,  8.6   , 8      , 13.5   , 7.5   , 14.9  , 13.5],
              [6     ,  6.5   , 6      , 10.5   , 4.9   , 11.8  , 10.4],
@@ -11,6 +11,7 @@ module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = fal
              [4     ,  4.5   , 4      , 8.4    , 3.2   , 8.4   , 7.5 ],
              [3     ,  3.2   , 3      , 6.6    , 2.7   , 6.6   , 6.6 ],
              [2.5   ,  2.7   , 2.3    , 6      , 2.3   , 6     , 5.5 ],
+             [2     ,  2.1   , 2    , 4.5      , 1.8   , 4.8   , 3.95 ],
             ];
     bolt_diameter = bolts[search(size, bolts)[0]][1];
     head_height   = bolts[search(size, bolts)[0]][2];
@@ -40,6 +41,10 @@ module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = fal
     if (pocket == true)
         translate([-pocket_size, -nut_pocket/2, length - global_clearance])
             cube([pocket_size, nut_pocket, nut_height + global_clearance]);
+    else
+        translate([0, 0, length - global_clearance])
+            cylinder(h = pocket_size + global_clearance, d = nut_diameter, $fn=6);
+
     // TODO washer
 }
 
@@ -57,3 +62,5 @@ translate([0, 150, 0])
     bolt(3);
 translate([0, 180, 0])
     bolt(2.5);
+translate([0, 200, 0])
+    bolt(2, pocket = false);
