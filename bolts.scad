@@ -30,8 +30,8 @@ module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = fal
     color("gray")
         cylinder(h = head_height, d = head_diameter);
     // head pocket
-    translate([0, 0, -length])
-        cylinder(h = length, d = head_diameter);
+    translate([0, 0, -pocket_size])
+        cylinder(h = pocket_size, d = head_diameter);
     // nut TODO square nut option
     if (square_nut == false)
         color("gray")
