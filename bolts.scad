@@ -60,7 +60,8 @@ translate([0, 120, 0])
     bolt(4);
 translate([0, 150, 0])
     bolt(3);
+rotate([0,30,0])
 translate([0, 180, 0])
-    bolt(2.5);
+    bolt(2.5, length = 10);
 translate([0, 200, 0])
     bolt(2, pocket = false);
