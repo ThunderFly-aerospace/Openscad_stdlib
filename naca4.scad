@@ -11,8 +11,8 @@
 // h    = height [mm]            (default= 1)
 // open = close at the thin end? (default = true)
 // two equivalent example calls
- airfoil(naca = 2408, L = 60, N=1001, h = 30, open = false);
-// airfoil(naca = [.2, .4, .32], L = 60, N=1001, h = 30, open = false);
+//airfoil(naca = 6408, L = 60, N=1001, h = 30, open = false);
+airfoil(naca = [0.06, 0.4, 0.08], L = 60, N=1001, h = 30, open = false);
 
 module help()
 {
@@ -70,7 +70,7 @@ module hollow_airfoil(naca=12, L = 100, N = 81, h = 1, open = false, wall_thickn
 
 // this is the main function providing the airfoil data
 function airfoil_data(naca=0012, L = 100, N = 81, open = false) =
-  let(Na = len(str(naca))!=3?NACA(naca):naca)
+  let(Na = is_list(naca)?naca:NACA(naca))
   let(A = [.2969, -0.126, -.3516, .2843, open?-0.1015:-0.1036])
   [for (b=[-180:360/(N):179.99])
     let (x = (1-cos(b))/2)
@@ -79,20 +79,20 @@ function airfoil_data(naca=0012, L = 100, N = 81, open = false) =
 
 
 function trailing_edge_angle(naca=0012, open = false) =
-  let(Na = len(str(naca))!=3?NACA(naca):naca)
+  let(Na = is_list(naca)?naca:NACA(naca))
   let(A = [.2969, -0.126, -.3516, .2843, open?-0.1015:-0.1036])
   let (x =0.999)  // set x near to airfoil trailing edge
   let(yt = Na[2]/.2*(A*[sqrt(x), x, x*x, x*x*x, x*x*x*x])) // calculate distance from x-axis at previously set position
   atan2(yt,1-x);  // calculate angle of triangle between end of airfoil. The triange height corresponds to previously calculated distance from x-axis
 
 function surface_angle(x = 0.5, naca=0012, open = false) =
-  let(Na = len(str(naca))!=3?NACA(naca):naca)
+  let(Na = is_list(naca)?naca:NACA(naca))
   let(A = [0.2969, -0.126, -0.3516, 0.2843, open?-0.1015:-0.1036])
   let(dy = Na[2]/0.2*(A*[(1/2)*(1/sqrt(x)), 1, 2*x, 3*x*x, 4*x*x*x])) // calculate derivative of airfoil function at the x point
   atan(dy);  // calculate  the angle from function derivative
 
 function surface_distance(x = 0.5, naca=0012, open = false) =
-  let(Na = len(str(naca))!=3?NACA(naca):naca)
+  let(Na = is_list(naca)?naca:NACA(naca))
   let(A = [0.2969, -0.126, -0.3516, 0.2843, open?-0.1015:-0.1036])
   Na[2]/.2*(A*[sqrt(x), x, x*x, x*x*x, x*x*x*x]); // calculate distance from x-axis at previously set position
 
