@@ -9,7 +9,8 @@ use <naca4.scad>
 //example1();
 //rotate([80, 180, 130])
 example();
-//example_cylinder();
+translate([0,80,0])
+example_cylinder();
 
 // sweep from NACA1480 to NACA6480 (len = 230 mm, winding y,z = 80°
 // sweeps generates a single polyhedron from multiple datasets
@@ -33,21 +34,19 @@ module example()
 module example_cylinder()
 {
   N = 40;
-  sweep(gen_dat(M=150, dz=1,N=N), showslices = true);
+  sweep(gen_dat(M=150, dz=1,N=N), showslices = false);
 //  sweep(gen_dat(N=5, dz=1,N=N), showslices = true);
 
   // specific generator function
   function gen_dat(M=10,dz=0.1,N=10) = [for (i=[0:dz:M])
-    let( L = extra_length(i))
-    let( af = vec3D(
-
-        circle(r =20  ) ))
-
+    let( af = vec3D(circle_data(r =20 + thickness(i) + extra_length(i), N=50)))
     T_(0, 0, (i)*2, af)];
 
   function thickness(i) = gauss(i,0.1,75,15);   //0.5*sin(i*i)+.1;
   function extra_length(i) = gauss(i,50,75,30);      //(60+sin(12*(i-3))*30);
 }
+
+function circle_data(r=1, N = 10) = [ for (th=[ for (i = [0:N-1]) i*(360/N) ]) [r*cos(th), r*sin(th)]];
 
 function gauss(x, a, b, c) = a*exp(-((x-b)*(x-b))/(2*c*c));
 
