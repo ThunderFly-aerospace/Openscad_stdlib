@@ -9,25 +9,47 @@ use <naca4.scad>
 //example1();
 //rotate([80, 180, 130])
 example();
+//example_cylinder();
 
 // sweep from NACA1480 to NACA6480 (len = 230 mm, winding y,z = 80°
 // sweeps generates a single polyhedron from multiple datasets
 module example()
 {
   N = 40;
-  sweep(gen_dat(M=5, dz=1,N=N), showslices = false);
+  sweep(gen_dat(M=150, dz=1,N=N), showslices = false);
 //  sweep(gen_dat(N=5, dz=1,N=N), showslices = true);
 
   // specific generator function
-  function gen_dat(M=10,dz=.1,N=10) = [for (i=[1:dz:M])
-    let( L = length(i))
+  function gen_dat(M=10,dz=0.1,N=10) = [for (i=[0:dz:M])
+    let( L = extra_length(i))
     let( af = vec3D(
-        airfoil_data([.1,.5,thickness(i)], L=length(i), N = N)))
-    T_(-L/2, 0, (i+1)*2, af)];  // translate airfoil
+        airfoil_data([0,0,0.05+thickness(i)], L=150+extra_length(i), N = N)))
+    T_(0, 0, (i)*2, af)];  // translate airfoil
 
-  function thickness(i) = .5*sin(i*i)+.1;
-  function length(i) = (60+sin(12*(i-3))*30);
+  function thickness(i) = gauss(i,0.1,75,15);   //0.5*sin(i*i)+.1;
+  function extra_length(i) = gauss(i,50,75,30);      //(60+sin(12*(i-3))*30);
 }
+
+module example_cylinder()
+{
+  N = 40;
+  sweep(gen_dat(M=150, dz=1,N=N), showslices = true);
+//  sweep(gen_dat(N=5, dz=1,N=N), showslices = true);
+
+  // specific generator function
+  function gen_dat(M=10,dz=0.1,N=10) = [for (i=[0:dz:M])
+    let( L = extra_length(i))
+    let( af = vec3D(
+
+        circle(r =20  ) ))
+
+    T_(0, 0, (i)*2, af)];
+
+  function thickness(i) = gauss(i,0.1,75,15);   //0.5*sin(i*i)+.1;
+  function extra_length(i) = gauss(i,50,75,30);      //(60+sin(12*(i-3))*30);
+}
+
+function gauss(x, a, b, c) = a*exp(-((x-b)*(x-b))/(2*c*c));
 
 module help()
 {
@@ -87,24 +109,24 @@ function faces_shift(d, dat) = [for (i=[0:len(dat)-1]) dat[i] + [d, d, d]];
 function del(A, n) = [for(i=[0:len(A)-1]) if (n!=i)A[i]];
 
 //// knitting for polyhedron
-  function faces_sweep(l, n=1, close = false) =
-      let(M = n*l, n1=close?n+1:n)
-      concat([[0,l,l-1]],   // first face
-             [for (i=[0:l*(n1-1)-2], j = [0,1])
-                j==0? [i, i+1, (i+l)%M]
-                    : [i+1, (i+l+1)%M, (i+l)%M]
-             ]
-             ,[[(n1*l-1)%M, (n1-1)*l-1, ((n1-1)*l)%M]
-             ]); // last face
-      ;
+function faces_sweep(l, n=1, close = false) =
+    let(M = n*l, n1=close?n+1:n)
+    concat([[0,l,l-1]],   // first face
+           [for (i=[0:l*(n1-1)-2], j = [0,1])
+              j==0? [i, i+1, (i+l)%M]
+                  : [i+1, (i+l+1)%M, (i+l)%M]
+           ]
+           ,[[(n1*l-1)%M, (n1-1)*l-1, ((n1-1)*l)%M]
+           ]); // last face
+;
 
-  function faces_polygon(l, first = true) = let(odd = (l%2==1), d=first?0:l)
-    let(res = odd?concat([[d,d+1,d+l-1]],
-      [for (i=[1:(l-3)/2], j=[0,1])(j==0)?[d+i,d+i+1,d+l-i]:[d+i+1,d+l-i-1, d+l-i]]):
-      [for (i=[0:(l-4)/2], j=[0,1])(j==0)?[d+i,d+i+1,d+l-i-1]:[d+i+1,d+l-i-2, d+l-i-1]])
-    first?facerev(res):res;
+function faces_polygon(l, first = true) = let(odd = (l%2==1), d=first?0:l)
+  let(res = odd?concat([[d,d+1,d+l-1]],
+    [for (i=[1:(l-3)/2], j=[0,1])(j==0)?[d+i,d+i+1,d+l-i]:[d+i+1,d+l-i-1, d+l-i]]):
+    [for (i=[0:(l-4)/2], j=[0,1])(j==0)?[d+i,d+i+1,d+l-i-1]:[d+i+1,d+l-i-2, d+l-i-1]])
+  first?facerev(res):res;
 
-  function facerev(dat) = [for (i=[0:len(dat)-1]) [dat[i][0],dat[i][2],dat[i][1]]];
+function facerev(dat) = [for (i=[0:len(dat)-1]) [dat[i][0],dat[i][2],dat[i][1]]];
 
 
 
@@ -115,7 +137,7 @@ function vec3D(v, z=0) = [for(i = [0:len(v)-1])
 
 // Translation - 1D, 2D, 3D point vector //////////////////////////
 // vector along all axes
-function T_(x=0, y=0, z=0, v) = let(x_ = (len(x)==3)?x:[x, y, z])
+function T_(x=0, y=0, z=0, v) = let(x_ = is_list(x)?x:[x, y, z])
   [for (i=[0:len(v)-1]) T__(x_[0], x_[1], x_[2], p=v[i])];
 /// vector along one axis
 function Tx_(x=0, v) = T_(x=x, v=v);
