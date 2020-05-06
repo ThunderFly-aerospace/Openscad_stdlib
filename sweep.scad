@@ -8,9 +8,9 @@ use <naca4.scad>
 
 //example1();
 //rotate([80, 180, 130])
-example();
-translate([0,80,0])
-example_cylinder();
+//example();
+//translate([0,80,0])
+//example_cylinder();
 
 // sweep from NACA1480 to NACA6480 (len = 230 mm, winding y,z = 80°
 // sweeps generates a single polyhedron from multiple datasets
