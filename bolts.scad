@@ -1,6 +1,6 @@
 include <../../../parameters.scad>
 
-module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = false,
+module bolt(size = 4, length = 35, pocket = true, head_pocket_size = 50,  nut_pocket_size = 35, washer = false,
             square_nut = false)
 {
     bolts = [//size | bolt d | head h | head d | nut h | nut d | nut pckt
@@ -30,8 +30,8 @@ module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = fal
     color("gray")
         cylinder(h = head_height, d = head_diameter);
     // head pocket
-    translate([0, 0, -pocket_size])
-        cylinder(h = pocket_size, d = head_diameter);
+    translate([0, 0, -head_pocket_size])
+        cylinder(h = head_pocket_size, d = head_diameter);
     // nut TODO square nut option
     if (square_nut == false)
         color("gray")
@@ -39,11 +39,11 @@ module bolt(size = 4, length = 35, pocket = true, pocket_size = 35, washer = fal
                 cylinder(h = nut_height + global_clearance, d = nut_diameter, $fn=6);
     // nut pocket TODO square nut option
     if (pocket == true)
-        translate([-pocket_size, -nut_pocket/2, length - global_clearance])
-            cube([pocket_size, nut_pocket, nut_height + global_clearance]);
+        translate([-nut_pocket_size, -nut_pocket/2, length - global_clearance])
+            cube([nut_pocket_size, nut_pocket, nut_height + global_clearance]);
     else
         translate([0, 0, length - global_clearance])
-            cylinder(h = pocket_size + global_clearance, d = nut_diameter, $fn=6);
+            cylinder(h = nut_pocket_size + global_clearance, d = nut_diameter, $fn=6);
 
     // TODO washer
 }
