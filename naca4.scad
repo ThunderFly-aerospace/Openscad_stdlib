@@ -96,6 +96,14 @@ function surface_distance(x = 0.5, naca=0012, open = false) =
   let(A = [0.2969, -0.126, -0.3516, 0.2843, open?-0.1015:-0.1036])
   Na[2]/.2*(A*[sqrt(x), x, x*x, x*x*x, x*x*x*x]); // calculate distance from x-axis at previously set position
 
+
+// get chamber value for relative airfoil x position
+function camberY(naca=2412, x) =
+  let(Na = is_list(naca)?naca:NACA(naca))
+  let(P = Na[1])
+  let(M = Na[0])
+  (x<P)?M/P/P*(2*P*x-x*x): M/(1-P)/(1-P)*(1 - 2*P + 2*P*x -x*x);
+
 // helper functions
 function NACA(naca) =
   let (M = floor(naca/1000))
