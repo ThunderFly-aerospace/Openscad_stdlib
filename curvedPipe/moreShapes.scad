@@ -24,19 +24,19 @@ module roundedRect(size, radius, center=false) {
 	x = size[0];
 	y = size[1];
 	z = size[2];
-	
+
 	translate([center?-x/2:0, center?-y/2:0, center?-z/2:0])
-	linear_extrude(height=z) 
+	linear_extrude(height=z)
 	hull() {
 		translate([radius, radius, 0])
 		circle(r=radius);
-		
+
 		translate([x - radius, radius, 0])
 		circle(r=radius);
-		
+
 		translate([x - radius, y - radius, 0])
 		circle(r=radius);
-		
+
 		translate([radius, y - radius, 0])
 		circle(r=radius);
 	}
@@ -100,17 +100,17 @@ module torusSlice(r1, r2, start_angle, end_angle, convexity=10, r3=0, $fn=64) {
 module trapezoid(a,b,h,aOffset=0,center=false) {
 	// lies in x/y plane
 	// edges a,b are paralle to x axis
-	// h is in direction of y axis	
+	// h is in direction of y axis
 	// b is anchored at origin, extends along positive x axis
 	// a is offset along y by h, extends along positive x axis
 	// a if offset along x axis, from y axis, by aOffset
 	// centering is relative to edge b
 
-	translate([center?-b/2:0, center?-h/2:0, 0]) 
+	translate([center?-b/2:0, center?-h/2:0, 0])
 	polygon(points=[	[0,0],
 					[aOffset,h],
 					[aOffset + a, h],
-					[b,0]]); 
+					[b,0]]);
 }
 
 module trapezoidPrism(a,b,h,aOffset,height,center=false) {
@@ -126,7 +126,7 @@ module arrangeShapesOnAxis(axis=[1,0,0], spacing=50) {
 	}
 }
 
-module arrangeShapesOnGrid(xSpacing=50, ySpacing=50, cols=3, showLocalAxes=false) {	
+module arrangeShapesOnGrid(xSpacing=50, ySpacing=50, cols=3, showLocalAxes=false) {
 	// layout is cols, rows
 	for (i=[0:$children-1]) {
 		translate([(i - floor(i / cols)*cols) * xSpacing, floor(i / cols) * ySpacing, 0]) {
@@ -197,11 +197,11 @@ module rounded_cylinder(r, h, r2, roundBothEnds=false)
 				translate([r - r2, r2])
                 circle(r = r2);
 			}
-			
+
         }
 }
 
-module sector(r, a, h, , center = true) {
+module sector(r, a, h, center = true) {
     linear_extrude(height = h, center = center)
         intersection() {
             circle(r = r, center = true);
@@ -252,7 +252,7 @@ module moreShapesExamples() {
 		rounded_square(w=30, h=20, r=5);
 		rounded_cylinder(r=10, h=50, r2=5, roundBothEnds=false);
 		rounded_cylinder(r=10, h=50, r2=5, roundBothEnds=true);
-		
+
 		// same as extruded pieSlice
 		sector(r=10, a=70, h=20, center = false);
 
@@ -261,6 +261,3 @@ module moreShapesExamples() {
 }
 
 moreShapesExamples();
-
-
-
